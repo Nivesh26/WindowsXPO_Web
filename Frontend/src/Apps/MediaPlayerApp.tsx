@@ -58,9 +58,21 @@ const TRACKS: SongTrack[] = [
   },
 ]
 
+export interface MediaPlayerAppProps {
+  masterVolume?: number
+  isMasterMuted?: boolean
+  onPlayerVolumeChange?: (vol: number) => void
+  onIsPlayingChange?: (playing: boolean) => void
+}
+
 type VisualizerPreset = 'bars' | 'fire' | 'neon'
 
-export default function MediaPlayerApp() {
+export default function MediaPlayerApp({
+  masterVolume = 0.75,
+  isMasterMuted = false,
+  onPlayerVolumeChange,
+  onIsPlayingChange,
+}: MediaPlayerAppProps = {}) {
   const [currentTrackIndex, setCurrentTrackIndex] = useState<number>(0)
   const [isPlaying, setIsPlaying] = useState<boolean>(false)
   const [currentTime, setCurrentTime] = useState<number>(0)
@@ -77,6 +89,28 @@ export default function MediaPlayerApp() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const animFrameRef = useRef<number | null>(null)
   const peakHeightsRef = useRef<number[]>([])
+
+  // Synchronize master volume and mute state with HTML5 audio element
+  useEffect(() => {
+    setVolume(masterVolume)
+  }, [masterVolume])
+
+  useEffect(() => {
+    setIsMuted(isMasterMuted)
+  }, [isMasterMuted])
+
+  useEffect(() => {
+    if (audioRef.current) {
+      const effectiveVol = (isMasterMuted || isMuted) ? 0 : masterVolume
+      audioRef.current.volume = Math.max(0, Math.min(1, effectiveVol))
+      audioRef.current.muted = isMasterMuted || isMuted
+    }
+  }, [masterVolume, isMasterMuted, isMuted])
+
+  // Notify parent of playback state
+  useEffect(() => {
+    onIsPlayingChange?.(isPlaying)
+  }, [isPlaying, onIsPlayingChange])
 
   const currentTrack = TRACKS[currentTrackIndex]
 
@@ -168,12 +202,10 @@ export default function MediaPlayerApp() {
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = parseFloat(e.target.value)
     setVolume(val)
-    if (audioRef.current) {
-      audioRef.current.volume = val
-    }
     if (val > 0 && isMuted) {
       setIsMuted(false)
     }
+    onPlayerVolumeChange?.(val)
   }
 
   // Toggle Mute
@@ -732,22 +764,22 @@ export default function MediaPlayerApp() {
           <div className="flex items-center gap-2">
             <button
               onClick={toggleMute}
-              title={isMuted ? 'Unmute' : 'Mute'}
-              className="text-sm hover:scale-110 transition-transform text-slate-300"
+              title={isMasterMuted || isMuted ? 'Unmute' : 'Mute'}
+              className="text-sm hover:scale-110 transition-transform text-slate-300 cursor-pointer"
             >
-              {isMuted || volume === 0 ? '🔇' : volume < 0.5 ? '🔉' : '🔊'}
+              {isMasterMuted || isMuted || volume === 0 ? '🔇' : volume < 0.5 ? '🔉' : '🔊'}
             </button>
             <input
               type="range"
               min={0}
               max={1}
               step={0.01}
-              value={isMuted ? 0 : volume}
+              value={isMasterMuted || isMuted ? 0 : volume}
               onChange={handleVolumeChange}
               className="w-20 h-1.5 bg-[#08101a] rounded-lg appearance-none cursor-pointer accent-sky-400 border border-slate-700/60"
             />
-            <span className="text-[10px] text-slate-400 font-mono w-8 text-right">
-              {Math.round((isMuted ? 0 : volume) * 100)}%
+            <span className="text-[10px] text-slate-400 font-mono w-10 text-right">
+              {isMasterMuted ? 'Muted' : `${Math.round((isMuted ? 0 : volume) * 100)}%`}
             </span>
           </div>
         </div>

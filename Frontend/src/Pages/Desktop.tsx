@@ -49,6 +49,11 @@ export default function Desktop() {
     }
   }
 
+  // Master Audio State
+  const [masterVolume, setMasterVolume] = useState<number>(0.75)
+  const [isMasterMuted, setIsMasterMuted] = useState<boolean>(false)
+  const [isMusicPlaying, setIsMusicPlaying] = useState<boolean>(false)
+
   // Initial windows: Clean desktop with no windows open initially
   const [windows, setWindows] = useState<WindowState[]>([])
 
@@ -312,6 +317,13 @@ export default function Desktop() {
               currentWallpaperUrl={currentWallpaperUrl}
               onSelectWallpaper={handleSetWallpaper}
             />
+          ) : win.id === 'media-player' ? (
+            <MediaPlayerApp
+              masterVolume={masterVolume}
+              isMasterMuted={isMasterMuted}
+              onPlayerVolumeChange={setMasterVolume}
+              onIsPlayingChange={setIsMusicPlaying}
+            />
           ) : (
             win.component
           )}
@@ -334,6 +346,11 @@ export default function Desktop() {
         openWindows={taskbarWindowItems}
         activeWindowId={activeWindowId}
         onWindowClick={handleTaskbarClick}
+        volume={masterVolume}
+        onVolumeChange={setMasterVolume}
+        isMuted={isMasterMuted}
+        onToggleMute={() => setIsMasterMuted((m) => !m)}
+        isMusicPlaying={isMusicPlaying}
       />
     </div>
   )
