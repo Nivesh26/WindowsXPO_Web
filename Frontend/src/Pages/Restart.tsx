@@ -142,7 +142,7 @@ const Restart = () => {
                 {/* Turn Off */}
                 <button
                   type="button"
-                  onClick={() => navigate('/')}
+                  onClick={() => navigate('/shutdown')}
                   className="flex flex-col items-center gap-2 group cursor-pointer"
                 >
                   <div className="w-16 h-16 rounded-full bg-gradient-to-b from-[#ff5555] to-[#c00] border-2 border-[#ff7777]/60 shadow-lg group-hover:brightness-110 group-hover:scale-105 transition-all flex items-center justify-center">

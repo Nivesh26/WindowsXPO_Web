@@ -3,6 +3,7 @@ import PowerOn from "./Pages/PowerOn"
 import LoadingPage from "./Pages/LoadingPage"
 import Desktop from "./Pages/Desktop"
 import Restart from "./Pages/Restart"
+import Shutdown from "./Pages/Shutdown"
 
 const App = () => {
   return (
@@ -12,6 +13,7 @@ const App = () => {
         <Route path="/loading" element={<LoadingPage />} />
         <Route path="/desktop" element={<Desktop />} />
         <Route path="/restart" element={<Restart />} />
+        <Route path="/shutdown" element={<Shutdown />} />
       </Routes>
     </BrowserRouter>
   )

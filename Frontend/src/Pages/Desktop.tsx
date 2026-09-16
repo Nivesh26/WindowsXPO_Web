@@ -274,9 +274,9 @@ export default function Desktop() {
     navigate('/loading', { state: { phase: 'welcome' } })
   }
 
-  // Turn off computer — goes directly to power off (welcome screen)
+  // Turn off computer — plays shutdown animation
   const handleTurnOff = () => {
-    navigate('/')
+    navigate('/shutdown')
   }
 
   const taskbarWindowItems: TaskbarWindowItem[] = windows.map((w) => ({
