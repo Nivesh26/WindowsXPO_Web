@@ -14,9 +14,10 @@ import NotepadApp from '../Apps/NotepadApp'
 import InternetExplorerApp from '../Apps/InternetExplorerApp'
 import GamesFolderApp from '../Apps/GamesFolderApp'
 import ControlPanelApp from '../Apps/ControlPanelApp'
+import MediaPlayerApp from '../Apps/MediaPlayerApp'
 
 interface WindowState {
-  id: 'my-computer' | 'my-documents' | 'notepad' | 'internet' | 'recycle-bin' | 'games' | 'control-panel'
+  id: 'my-computer' | 'my-documents' | 'notepad' | 'internet' | 'recycle-bin' | 'games' | 'control-panel' | 'media-player'
   title: string
   icon: ReactNode
   component: ReactNode
@@ -63,7 +64,7 @@ export default function Desktop() {
   }
 
   // Open an app from Desktop Icon or Start Menu
-  const handleOpenApp = (appId: 'my-computer' | 'my-documents' | 'notepad' | 'internet' | 'recycle-bin' | 'games' | 'control-panel') => {
+  const handleOpenApp = (appId: 'my-computer' | 'my-documents' | 'notepad' | 'internet' | 'recycle-bin' | 'games' | 'control-panel' | 'media-player') => {
     // Check if already open
     const existing = windows.find((w) => w.id === appId)
     if (existing) {
@@ -181,6 +182,20 @@ export default function Desktop() {
           ),
           initialPos: { x: 180, y: 70 },
           initialSize: { width: 720, height: 490 },
+          isMinimized: false,
+          isMaximized: false,
+          zIndex: nextZ,
+        }
+        break
+
+      case 'media-player':
+        newWin = {
+          id: 'media-player',
+          title: 'Windows Media Player',
+          icon: <img src="/icons/wmp.png" alt="" className="w-4 h-4 object-contain" />,
+          component: <MediaPlayerApp />,
+          initialPos: { x: 160, y: 50 },
+          initialSize: { width: 780, height: 520 },
           isMinimized: false,
           isMaximized: false,
           zIndex: nextZ,

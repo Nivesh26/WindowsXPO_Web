@@ -1,7 +1,7 @@
 interface StartMenuProps {
   isOpen: boolean
   onClose: () => void
-  onOpenApp: (appId: 'my-computer' | 'my-documents' | 'notepad' | 'internet' | 'recycle-bin' | 'games' | 'control-panel') => void
+  onOpenApp: (appId: 'my-computer' | 'my-documents' | 'notepad' | 'internet' | 'recycle-bin' | 'games' | 'control-panel' | 'media-player') => void
   onLogOff: () => void
   onTurnOff: () => void
 }
@@ -114,12 +114,12 @@ export default function StartMenu({ isOpen, onClose, onOpenApp, onLogOff, onTurn
             {/* Media Player */}
             <div
               onClick={() => {
-                onOpenApp('internet')
+                onOpenApp('media-player')
                 onClose()
               }}
               className="flex items-center gap-2.5 p-1.5 rounded hover:bg-[#316ac5] hover:text-white group cursor-pointer transition-colors"
             >
-              <div className="w-7 h-7 flex items-center justify-center text-xl shrink-0">🎵</div>
+              <img src="/icons/wmp.png" alt="Windows Media Player" className="w-7 h-7 object-contain shrink-0" />
               <div className="flex flex-col">
                 <span className="font-bold text-[12px] group-hover:text-white text-neutral-900">Windows Media Player</span>
                 <span className="text-[10px] text-neutral-500 group-hover:text-blue-100">Audio & Video</span>

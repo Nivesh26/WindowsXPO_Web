@@ -64,8 +64,6 @@ export default function WindowFrame({
     }
   }, [])
 
-  if (isMinimized) return null
-
   return (
     <div
       onClick={onFocus}
@@ -74,8 +72,9 @@ export default function WindowFrame({
         ...(isMaximized
           ? { top: 0, left: 0, width: '100vw', height: 'calc(100vh - 30px)' }
           : { top: pos.y, left: pos.x, width: initialSize.width, height: initialSize.height }),
+        ...(isMinimized ? { display: 'none' } : {}),
       }}
-      className={`absolute flex flex-col bg-[#ece9d8] border-[3px] border-[#0055ea] rounded-t-lg shadow-[0_10px_25px_rgba(0,0,0,0.5)] select-none overflow-hidden ${
+      className={`absolute ${isMinimized ? 'hidden' : 'flex'} flex-col bg-[#ece9d8] border-[3px] border-[#0055ea] rounded-t-lg shadow-[0_10px_25px_rgba(0,0,0,0.5)] select-none overflow-hidden ${
         isMaximized ? 'rounded-none border-none' : ''
       }`}
     >
