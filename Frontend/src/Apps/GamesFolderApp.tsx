@@ -33,8 +33,6 @@ export default function GamesFolderApp({ onOpenApp }: GamesFolderAppProps) {
 
   const handleBackToFolder = () => setView('folder')
 
-  const currentGame = GAMES.find(g => g.id === view)
-
   const addressPath =
     view === 'sudoku'
       ? 'C:\\Program Files\\Games\\Sudoku.exe'

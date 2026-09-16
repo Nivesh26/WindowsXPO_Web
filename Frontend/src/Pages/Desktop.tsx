@@ -90,7 +90,7 @@ export default function Desktop() {
           id: 'my-computer',
           title: 'My Computer',
           icon: <img src="/icons/my-computer.png" alt="" className="w-4 h-4 object-contain" />,
-          component: <MyComputerApp />,
+          component: <MyComputerApp onOpenApp={handleOpenApp} />,
           initialPos: { x: 140, y: 60 },
           initialSize: { width: 680, height: 460 },
           isMinimized: false,
@@ -344,7 +344,7 @@ export default function Desktop() {
         onClose={() => setIsStartOpen(false)}
         onOpenApp={handleOpenApp}
         onLogOff={handleLogOff}
-        onRestart={() => navigate('/restart')}
+        onRestart={() => navigate('/loading')}
         onTurnOff={handleTurnOff}
       />
 

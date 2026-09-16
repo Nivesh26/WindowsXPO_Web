@@ -85,7 +85,7 @@ const Restart = () => {
                 background: 'linear-gradient(90deg, #1569d4 0%, #0f52b6 50%, #1d4da0 100%)',
               }}
             >
-              <img src="/icons/my-computer.png" alt="" className="w-4 h-4 object-contain" onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }} />
+              <img src="/windows-xp.png" alt="" className="w-4 h-4 object-contain" onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }} />
               <span className="text-white font-bold text-sm tracking-wide flex-1">Turn off computer</span>
               <button
                 type="button"

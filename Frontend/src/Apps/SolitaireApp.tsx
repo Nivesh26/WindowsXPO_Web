@@ -325,13 +325,11 @@ export default function SolitaireApp() {
 
   // Card component
   const CardEl = ({
-    card, from, draggable = true, isBottom = false, stackBelow = 0
+    card, from, draggable = true
   }: {
     card: Card
     from: CardPosition
     draggable?: boolean
-    isBottom?: boolean
-    stackBelow?: number
   }) => {
     const isDragging = drag?.cards[0].id === card.id && drag.from.area === from.area && drag.from.col === from.col
 
@@ -516,7 +514,7 @@ export default function SolitaireApp() {
                 />
                 {/* Cards */}
                 {col.map((card, ri) => {
-                  const offset = ri === 0 ? 0 : col.slice(0, ri).reduce((acc, c, idx) => {
+                  const offset = ri === 0 ? 0 : col.slice(0, ri).reduce((acc, c) => {
                     return acc + (c.faceUp ? STACK_OFFSET_FACE_UP : STACK_OFFSET_DOWN)
                   }, 0)
                   return (
@@ -527,8 +525,6 @@ export default function SolitaireApp() {
                       <CardEl
                         card={card}
                         from={{ area: 'tableau', col: ci, row: ri }}
-                        isBottom={ri === col.length - 1}
-                        stackBelow={col.length - 1 - ri}
                       />
                     </div>
                   )
