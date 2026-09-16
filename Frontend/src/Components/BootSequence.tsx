@@ -1,10 +1,18 @@
 import { useState, useEffect, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 
 export default function BootSequence() {
   const navigate = useNavigate()
+  const location = useLocation()
+
+  // Determine initial phase (e.g. 'welcome' when user logs off)
+  const searchParams = new URLSearchParams(location.search)
+  const queryPhase = searchParams.get('phase') as 'bios' | 'drivers' | 'xp-boot' | 'welcome' | null
+  const locationState = location.state as { phase?: 'bios' | 'drivers' | 'xp-boot' | 'welcome' } | null
+  const initialPhase = queryPhase || locationState?.phase || 'bios'
+
   // Boot phases: 'bios' -> 'drivers' -> 'xp-boot' -> 'welcome'
-  const [phase, setPhase] = useState<'bios' | 'drivers' | 'xp-boot' | 'welcome'>('bios')
+  const [phase, setPhase] = useState<'bios' | 'drivers' | 'xp-boot' | 'welcome'>(initialPhase)
   const [memoryCount, setMemoryCount] = useState<number>(0)
   const [biosStage, setBiosStage] = useState<number>(0)
   const [driverIndex, setDriverIndex] = useState<number>(0)
