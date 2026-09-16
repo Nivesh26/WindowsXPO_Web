@@ -5,6 +5,7 @@ import DesktopIcons from '../Components/DesktopIcons'
 import Taskbar, { type TaskbarWindowItem } from '../Components/Taskbar'
 import StartMenu from '../Components/StartMenu'
 import WindowFrame from '../Components/WindowFrame'
+import { wallpapers, defaultWallpaper } from '../Wallpaper'
 
 // Window Application Components
 import MyComputerApp from '../Apps/MyComputerApp'
@@ -31,6 +32,20 @@ export default function Desktop() {
   const [isStartOpen, setIsStartOpen] = useState<boolean>(false)
   const [highestZ, setHighestZ] = useState<number>(20)
   const [activeWindowId, setActiveWindowId] = useState<string | null>(null)
+
+  // Wallpaper state with localStorage persistence
+  const [currentWallpaperUrl, setCurrentWallpaperUrl] = useState<string>(() => {
+    const savedId = typeof window !== 'undefined' ? localStorage.getItem('xp_current_wallpaper') : null
+    const matched = savedId ? wallpapers.find((w) => w.id === savedId) : null
+    return matched?.url || defaultWallpaper.url
+  })
+
+  const handleSetWallpaper = (url: string, id: string) => {
+    setCurrentWallpaperUrl(url)
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('xp_current_wallpaper', id)
+    }
+  }
 
   // Initial windows: Clean desktop with no windows open initially
   const [windows, setWindows] = useState<WindowState[]>([])
@@ -158,7 +173,12 @@ export default function Desktop() {
           id: 'control-panel',
           title: 'Control Panel',
           icon: <img src="/icons/control-panel.png" alt="" className="w-4 h-4 object-contain" />,
-          component: <ControlPanelApp />,
+          component: (
+            <ControlPanelApp
+              currentWallpaperUrl={currentWallpaperUrl}
+              onSelectWallpaper={handleSetWallpaper}
+            />
+          ),
           initialPos: { x: 180, y: 70 },
           initialSize: { width: 720, height: 490 },
           isMinimized: false,
@@ -234,8 +254,8 @@ export default function Desktop() {
       }}
       className="relative w-screen h-screen overflow-hidden select-none font-sans"
     >
-      {/* Iconic Windows XP Bliss Wallpaper */}
-      <DesktopWallpaper />
+      {/* Desktop Wallpaper */}
+      <DesktopWallpaper wallpaperUrl={currentWallpaperUrl} />
 
       {/* Desktop Icons */}
       <DesktopIcons onOpenApp={handleOpenApp} />
@@ -257,7 +277,14 @@ export default function Desktop() {
           onMaximize={() => handleMaximize(win.id)}
           onFocus={() => focusWindow(win.id)}
         >
-          {win.component}
+          {win.id === 'control-panel' ? (
+            <ControlPanelApp
+              currentWallpaperUrl={currentWallpaperUrl}
+              onSelectWallpaper={handleSetWallpaper}
+            />
+          ) : (
+            win.component
+          )}
         </WindowFrame>
       ))}
 

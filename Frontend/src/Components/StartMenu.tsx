@@ -31,8 +31,9 @@ export default function StartMenu({ isOpen, onClose, onOpenApp, onLogOff, onTurn
       {/* Two-Column Middle Body */}
       <div className="flex bg-white h-[380px]">
         {/* Left Column (White background - Applications) */}
-        <div className="flex-1 bg-white p-2 flex flex-col justify-between border-r border-[#95bdee]">
-          <div className="flex flex-col gap-1">
+        <div className="flex-1 bg-white p-2 flex flex-col justify-between border-r border-[#95bdee] min-h-0 overflow-hidden">
+          {/* Scrollable Applications List */}
+          <div className="flex-1 overflow-y-auto pr-1 flex flex-col gap-1 min-h-0">
             {/* Pinned App: Internet */}
             <div
               onClick={() => {
@@ -142,7 +143,7 @@ export default function StartMenu({ isOpen, onClose, onOpenApp, onLogOff, onTurn
           </div>
 
           {/* All Programs Green Bar */}
-          <div className="border-t border-neutral-200 pt-2">
+          <div className="border-t border-neutral-200 pt-2 shrink-0 bg-white">
             <button
               type="button"
               onClick={() => onOpenApp('my-computer')}
@@ -157,7 +158,7 @@ export default function StartMenu({ isOpen, onClose, onOpenApp, onLogOff, onTurn
         </div>
 
         {/* Right Column (Light Blue background - System Folders & Tools) */}
-        <div className="w-[170px] bg-[#d3e5fa] p-2 flex flex-col gap-1 text-[11px] text-blue-950">
+        <div className="w-[170px] bg-[#d3e5fa] p-2 flex flex-col gap-1 text-[11px] text-blue-950 overflow-y-auto min-h-0">
           <div
             onClick={() => {
               onOpenApp('my-documents')

@@ -72,3 +72,24 @@ html, body, #root {
     transform: translateX(-50%) translateY(-5px);
   }
 }
+
+/* Windows XP Luna Scrollbars */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #ece9d8;
+  border: 1px solid #dcd7c8;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c3d9ff;
+  border: 1px solid #7ea8ea;
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9ebbfa;
+}
