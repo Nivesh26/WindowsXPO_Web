@@ -1,10 +1,23 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 export default function DesktopView() {
+  const navigate = useNavigate()
   const [isPowerOn, setIsPowerOn] = useState<boolean>(false)
   const [isBooting, setIsBooting] = useState<boolean>(false)
   const [floppyInserted, setFloppyInserted] = useState<boolean>(false)
   const [powerButtonPressed, setPowerButtonPressed] = useState<boolean>(false)
+
+  const bootTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // Clear timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (bootTimerRef.current) {
+        clearTimeout(bootTimerRef.current)
+      }
+    }
+  }, [])
 
   // Web Audio Context for synthesized retro hardware sound effects
   const audioCtxRef = useRef<AudioContext | null>(null)
@@ -133,12 +146,17 @@ export default function DesktopView() {
       playDegaussSound()
       setIsBooting(true)
       setIsPowerOn(true)
-      const timer = setTimeout(() => {
-        setIsBooting(false)
-      }, 3500)
-      return () => clearTimeout(timer)
+
+      // After user power on, after 3 seconds navigate to LoadingPage
+      bootTimerRef.current = setTimeout(() => {
+        navigate('/loading')
+      }, 3000)
     } else {
       // Powering OFF
+      if (bootTimerRef.current) {
+        clearTimeout(bootTimerRef.current)
+        bootTimerRef.current = null
+      }
       setIsPowerOn(false)
       setIsBooting(false)
     }

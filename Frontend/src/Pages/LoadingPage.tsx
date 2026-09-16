@@ -1,10 +1,11 @@
+import BootSequence from '../Components/BootSequence'
 
 const LoadingPage = () => {
-    return (
-        <div>
-            <h1>Loading...</h1>
-        </div>
-    )
+  return (
+    <div className="w-screen h-screen overflow-hidden bg-black">
+      <BootSequence />
+    </div>
+  )
 }
 
 export default LoadingPage
