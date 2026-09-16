@@ -1,8 +1,15 @@
-import React from "react"
+import { BrowserRouter, Routes, Route } from "react-router-dom"
+import PowerOn from "./Pages/PowerOn"
+import LoadingPage from "./Pages/LoadingPage"
 
 const App = () => {
   return (
-    <div>App</div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<PowerOn />} />
+        <Route path="/loading" element={<LoadingPage />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
