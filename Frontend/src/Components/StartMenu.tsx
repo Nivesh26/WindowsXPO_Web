@@ -1,7 +1,7 @@
 interface StartMenuProps {
   isOpen: boolean
   onClose: () => void
-  onOpenApp: (appId: 'my-computer' | 'my-documents' | 'notepad' | 'internet' | 'recycle-bin' | 'games' | 'control-panel' | 'media-player') => void
+  onOpenApp: (appId: 'my-computer' | 'my-documents' | 'notepad' | 'internet' | 'recycle-bin' | 'games' | 'control-panel' | 'media-player' | 'sudoku') => void
   onLogOff: () => void
   onTurnOff: () => void
 }

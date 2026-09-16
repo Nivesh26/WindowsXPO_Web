@@ -15,9 +15,10 @@ import InternetExplorerApp from '../Apps/InternetExplorerApp'
 import GamesFolderApp from '../Apps/GamesFolderApp'
 import ControlPanelApp from '../Apps/ControlPanelApp'
 import MediaPlayerApp from '../Apps/MediaPlayerApp'
+import SudokuApp from '../Apps/SudokuApp'
 
 interface WindowState {
-  id: 'my-computer' | 'my-documents' | 'notepad' | 'internet' | 'recycle-bin' | 'games' | 'control-panel' | 'media-player'
+  id: 'my-computer' | 'my-documents' | 'notepad' | 'internet' | 'recycle-bin' | 'games' | 'control-panel' | 'media-player' | 'sudoku'
   title: string
   icon: ReactNode
   component: ReactNode
@@ -64,7 +65,7 @@ export default function Desktop() {
   }
 
   // Open an app from Desktop Icon or Start Menu
-  const handleOpenApp = (appId: 'my-computer' | 'my-documents' | 'notepad' | 'internet' | 'recycle-bin' | 'games' | 'control-panel' | 'media-player') => {
+  const handleOpenApp = (appId: 'my-computer' | 'my-documents' | 'notepad' | 'internet' | 'recycle-bin' | 'games' | 'control-panel' | 'media-player' | 'sudoku') => {
     // Check if already open
     const existing = windows.find((w) => w.id === appId)
     if (existing) {
@@ -160,7 +161,7 @@ export default function Desktop() {
           id: 'games',
           title: 'Games',
           icon: <img src="/icons/games.png" alt="" className="w-4 h-4 object-contain" />,
-          component: <GamesFolderApp />,
+          component: <GamesFolderApp onOpenApp={handleOpenApp} />,
           initialPos: { x: 220, y: 90 },
           initialSize: { width: 680, height: 460 },
           isMinimized: false,
@@ -196,6 +197,20 @@ export default function Desktop() {
           component: <MediaPlayerApp />,
           initialPos: { x: 160, y: 50 },
           initialSize: { width: 780, height: 520 },
+          isMinimized: false,
+          isMaximized: false,
+          zIndex: nextZ,
+        }
+        break
+
+      case 'sudoku':
+        newWin = {
+          id: 'sudoku',
+          title: 'Sudoku - Windows XP Game',
+          icon: <img src="/icons/sudoku.png" alt="" className="w-4 h-4 object-contain" />,
+          component: <SudokuApp />,
+          initialPos: { x: 260, y: 40 },
+          initialSize: { width: 560, height: 620 },
           isMinimized: false,
           isMaximized: false,
           zIndex: nextZ,

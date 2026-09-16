@@ -3,12 +3,12 @@ import { useState, type ReactNode } from 'react'
 export interface DesktopIconItem {
   id: string
   title: string
-  appId: 'my-computer' | 'my-documents' | 'notepad' | 'internet' | 'recycle-bin' | 'games' | 'control-panel' | 'media-player'
+  appId: 'my-computer' | 'my-documents' | 'notepad' | 'internet' | 'recycle-bin' | 'games' | 'control-panel' | 'media-player' | 'sudoku'
   icon: ReactNode
 }
 
 interface DesktopIconsProps {
-  onOpenApp: (appId: 'my-computer' | 'my-documents' | 'notepad' | 'internet' | 'recycle-bin' | 'games' | 'control-panel' | 'media-player') => void
+  onOpenApp: (appId: 'my-computer' | 'my-documents' | 'notepad' | 'internet' | 'recycle-bin' | 'games' | 'control-panel' | 'media-player' | 'sudoku') => void
 }
 
 export default function DesktopIcons({ onOpenApp }: DesktopIconsProps) {
@@ -83,18 +83,6 @@ export default function DesktopIcons({ onOpenApp }: DesktopIconsProps) {
         <img
           src="/icons/control-panel.png"
           alt="Control Panel"
-          className="w-12 h-12 object-contain drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] pointer-events-none"
-        />
-      ),
-    },
-    {
-      id: 'media-player',
-      title: 'Windows Media Player',
-      appId: 'media-player',
-      icon: (
-        <img
-          src="/icons/wmp.png"
-          alt="Windows Media Player"
           className="w-12 h-12 object-contain drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] pointer-events-none"
         />
       ),
