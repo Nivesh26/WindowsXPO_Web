@@ -130,11 +130,11 @@ export default function Desktop() {
       case 'internet':
         newWin = {
           id: 'internet',
-          title: 'Nivesh Web Portal - Microsoft Internet Explorer',
+          title: 'Microsoft Internet Explorer',
           icon: <img src="/icons/internet-explorer.png" alt="" className="w-4 h-4 object-contain" />,
           component: <InternetExplorerApp />,
-          initialPos: { x: 160, y: 50 },
-          initialSize: { width: 720, height: 490 },
+          initialPos: { x: 140, y: 40 },
+          initialSize: { width: 800, height: 530 },
           isMinimized: false,
           isMaximized: false,
           zIndex: nextZ,
@@ -184,6 +184,10 @@ export default function Desktop() {
             <ControlPanelApp
               currentWallpaperUrl={currentWallpaperUrl}
               onSelectWallpaper={handleSetWallpaper}
+              volume={masterVolume}
+              isMuted={isMasterMuted}
+              onVolumeChange={setMasterVolume}
+              onMuteChange={setIsMasterMuted}
             />
           ),
           initialPos: { x: 180, y: 70 },
@@ -270,7 +274,7 @@ export default function Desktop() {
     navigate('/loading', { state: { phase: 'welcome' } })
   }
 
-  // Turn off computer returns to desk view
+  // Turn off computer — goes directly to power off (welcome screen)
   const handleTurnOff = () => {
     navigate('/')
   }
@@ -316,6 +320,10 @@ export default function Desktop() {
             <ControlPanelApp
               currentWallpaperUrl={currentWallpaperUrl}
               onSelectWallpaper={handleSetWallpaper}
+              volume={masterVolume}
+              isMuted={isMasterMuted}
+              onVolumeChange={setMasterVolume}
+              onMuteChange={setIsMasterMuted}
             />
           ) : win.id === 'media-player' ? (
             <MediaPlayerApp
@@ -336,6 +344,7 @@ export default function Desktop() {
         onClose={() => setIsStartOpen(false)}
         onOpenApp={handleOpenApp}
         onLogOff={handleLogOff}
+        onRestart={() => navigate('/restart')}
         onTurnOff={handleTurnOff}
       />
 

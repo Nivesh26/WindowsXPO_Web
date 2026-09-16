@@ -12,11 +12,18 @@ interface CategoryItem {
 interface ControlPanelAppProps {
   currentWallpaperUrl?: string
   onSelectWallpaper?: (url: string, id: string) => void
+  volume?: number
+  isMuted?: boolean
+  onVolumeChange?: (vol: number) => void
+  onMuteChange?: (muted: boolean) => void
 }
 
-export default function ControlPanelApp({ currentWallpaperUrl, onSelectWallpaper }: ControlPanelAppProps) {
+export default function ControlPanelApp({ currentWallpaperUrl, onSelectWallpaper, volume = 0.75, isMuted = false, onVolumeChange, onMuteChange }: ControlPanelAppProps) {
   const [selectedCategory, setSelectedCategory] = useState<CategoryItem | null>(null)
-  const [activeTask, setActiveTask] = useState<'wallpaper' | null>(null)
+  const [activeTask, setActiveTask] = useState<'wallpaper' | 'adjust-volume' | null>(null)
+  // Local volume state mirrors prop (slider needs local state for smooth drag)
+  const [localVolume, setLocalVolume] = useState<number>(volume)
+  const [localMuted, setLocalMuted] = useState<boolean>(isMuted)
 
   // Find initial active wallpaper
   const initialWallpaper =
@@ -117,6 +124,9 @@ export default function ControlPanelApp({ currentWallpaperUrl, onSelectWallpaper
   const getAddressText = () => {
     if (activeTask === 'wallpaper') {
       return 'Control Panel > Appearance and Themes > Display Properties'
+    }
+    if (activeTask === 'adjust-volume') {
+      return 'Control Panel > Sounds, Speech, and Audio Devices > Volume Control'
     }
     if (selectedCategory) {
       return `Control Panel > ${selectedCategory.title}`
@@ -227,7 +237,168 @@ export default function ControlPanelApp({ currentWallpaperUrl, onSelectWallpaper
 
         {/* Right Content Area */}
         <div className="flex-1 bg-white p-5 overflow-y-auto">
-          {activeTask === 'wallpaper' ? (
+          {activeTask === 'adjust-volume' ? (
+            /* Authentic XP Volume Control Dialog */
+            <div className="max-w-md mx-auto">
+              <div className="bg-[#ece9d8] border border-[#919b9c] shadow-md rounded-sm overflow-hidden">
+                {/* Dialog title bar */}
+                <div className="bg-gradient-to-r from-[#003399] via-[#0055ea] to-[#1166ff] text-white px-3 py-1.5 flex items-center gap-2 select-none">
+                  <span className="text-[13px]">🔊</span>
+                  <span className="font-bold text-[12px] tracking-wide">Volume Control</span>
+                </div>
+
+                {/* Tabs */}
+                <div className="flex border-b border-[#919b9c] px-3 pt-2 gap-1 text-[11px] bg-[#ece9d8]">
+                  <button type="button" className="px-3 py-1 bg-white border-t border-l border-r border-[#919b9c] -mb-px rounded-t font-bold text-neutral-900 shadow-xs">Volume</button>
+                  <button type="button" className="px-3 py-1 bg-[#ece9d8] border-t border-l border-r border-[#919b9c] rounded-t text-neutral-500 cursor-pointer">Sounds</button>
+                  <button type="button" className="px-3 py-1 bg-[#ece9d8] border-t border-l border-r border-[#919b9c] rounded-t text-neutral-500 cursor-pointer">Audio</button>
+                  <button type="button" className="px-3 py-1 bg-[#ece9d8] border-t border-l border-r border-[#919b9c] rounded-t text-neutral-500 cursor-pointer">Voice</button>
+                </div>
+
+                <div className="p-5 bg-white">
+                  {/* Main volume slider — vertical */}
+                  <div className="flex items-end gap-6">
+                    {/* Master Volume Column */}
+                    <div className="flex flex-col items-center gap-2">
+                      <span className="text-[11px] font-bold text-neutral-800">Master Volume</span>
+                      <div className="flex items-center gap-3">
+                        {/* Vertical slider */}
+                        <div className="relative flex flex-col items-center" style={{ height: 160 }}>
+                          <input
+                            type="range"
+                            min={0}
+                            max={100}
+                            value={localMuted ? 0 : Math.round(localVolume * 100)}
+                            onChange={(e) => {
+                              const val = parseInt(e.target.value) / 100
+                              setLocalVolume(val)
+                              if (localMuted && val > 0) {
+                                setLocalMuted(false)
+                                onMuteChange?.(false)
+                              }
+                              onVolumeChange?.(val)
+                            }}
+                            className="cursor-pointer"
+                            style={{
+                              writingMode: 'vertical-lr' as const,
+                              direction: 'rtl',
+                              width: 32,
+                              height: 150,
+                              accentColor: '#316ac5',
+                            }}
+                          />
+                        </div>
+                        {/* Tick labels */}
+                        <div className="flex flex-col justify-between text-[10px] text-neutral-500 font-mono" style={{ height: 150 }}>
+                          <span>High</span>
+                          <span>75</span>
+                          <span>50</span>
+                          <span>25</span>
+                          <span>Low</span>
+                        </div>
+                      </div>
+                      <span className="text-[11px] font-mono font-bold text-[#316ac5]">
+                        {localMuted ? 'Muted' : `${Math.round(localVolume * 100)}%`}
+                      </span>
+                    </div>
+
+                    {/* Divider */}
+                    <div className="w-px bg-neutral-300 self-stretch mx-2" />
+
+                    {/* Right panel: speakers + visual feedback */}
+                    <div className="flex-1 flex flex-col gap-4">
+                      {/* Visual VU meter */}
+                      <div className="flex flex-col gap-1">
+                        <span className="text-[11px] font-bold text-neutral-700 mb-1">Level</span>
+                        <div className="flex items-end gap-1 h-20">
+                          {Array.from({ length: 12 }).map((_, i) => {
+                            const threshold = (i + 1) / 12
+                            const lit = !localMuted && localVolume >= threshold
+                            const isHigh = i >= 10
+                            const isMid = i >= 7 && i < 10
+                            return (
+                              <div
+                                key={i}
+                                style={{ height: `${((i + 1) / 12) * 80}px` }}
+                                className={`w-4 rounded-sm transition-colors duration-150 ${
+                                  lit
+                                    ? isHigh
+                                      ? 'bg-red-500'
+                                      : isMid
+                                      ? 'bg-yellow-400'
+                                      : 'bg-emerald-500'
+                                    : 'bg-neutral-200'
+                                }`}
+                              />
+                            )
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Speaker icon */}
+                      <div className="flex items-center gap-2 text-neutral-600">
+                        <span className="text-3xl">{localMuted || localVolume === 0 ? '🔇' : localVolume < 0.4 ? '🔉' : '🔊'}</span>
+                        <span className="text-[11px] text-neutral-500">System Audio Output</span>
+                      </div>
+
+                      {/* Mute checkbox */}
+                      <label className="flex items-center gap-2 cursor-pointer select-none mt-1">
+                        <input
+                          type="checkbox"
+                          checked={localMuted}
+                          onChange={(e) => {
+                            const m = e.target.checked
+                            setLocalMuted(m)
+                            onMuteChange?.(m)
+                            if (!m) onVolumeChange?.(localVolume)
+                          }}
+                          className="w-3.5 h-3.5 cursor-pointer accent-[#316ac5]"
+                        />
+                        <span className="text-[11px] font-semibold text-neutral-800">Mute</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Dialog action buttons */}
+                <div className="flex justify-end gap-2 px-4 pb-4 pt-2 bg-[#ece9d8] border-t border-[#d0ccc0] text-[11px]">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onVolumeChange?.(localVolume)
+                      onMuteChange?.(localMuted)
+                      setActiveTask(null)
+                    }}
+                    className="px-5 py-1 bg-[#ece9d8] hover:bg-white border border-[#003c74] rounded-xs font-semibold shadow-xs cursor-pointer"
+                  >
+                    OK
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setLocalVolume(volume); setLocalMuted(isMuted); setActiveTask(null) }}
+                    className="px-4 py-1 bg-[#ece9d8] hover:bg-white border border-[#7f9db9] rounded-xs shadow-xs cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { onVolumeChange?.(localVolume); onMuteChange?.(localMuted) }}
+                    className="px-4 py-1 bg-[#ece9d8] hover:bg-white border border-[#7f9db9] rounded-xs shadow-xs cursor-pointer font-bold text-blue-950"
+                  >
+                    Apply
+                  </button>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setActiveTask(null)}
+                className="mt-4 text-xs text-neutral-600 hover:text-neutral-900 underline cursor-pointer"
+              >
+                🠈 Back to Sounds, Speech, and Audio Devices
+              </button>
+            </div>
+          ) : activeTask === 'wallpaper' ? (
             /* Authentic Display Properties Dialog View */
             <div className="max-w-xl mx-auto bg-[#ece9d8] p-3 rounded border border-[#919b9c] shadow-sm select-none">
               {/* Tab Bar */}
@@ -398,6 +569,10 @@ export default function ControlPanelApp({ currentWallpaperUrl, onSelectWallpaper
                     onClick={() => {
                       if (task.includes('desktop background') || selectedCategory.id === 'appearance') {
                         setActiveTask('wallpaper')
+                      } else if (task.includes('system volume') || task.includes('Adjust')) {
+                        setLocalVolume(volume)
+                        setLocalMuted(isMuted)
+                        setActiveTask('adjust-volume')
                       }
                     }}
                     className="flex items-center gap-2 text-blue-700 hover:text-blue-900 hover:underline cursor-pointer p-1.5 rounded hover:bg-blue-50 group"

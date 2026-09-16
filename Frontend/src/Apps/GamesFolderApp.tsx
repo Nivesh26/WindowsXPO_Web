@@ -1,21 +1,53 @@
 import { useState } from 'react'
 import SudokuApp from './SudokuApp'
+import SolitaireApp from './SolitaireApp'
 
 interface GamesFolderAppProps {
   onOpenApp?: (appId: 'my-computer' | 'my-documents' | 'notepad' | 'internet' | 'recycle-bin' | 'games' | 'control-panel' | 'media-player' | 'sudoku') => void
 }
 
+type GameView = 'folder' | 'sudoku' | 'solitaire'
+
+const GAMES = [
+  {
+    id: 'sudoku' as const,
+    name: 'Sudoku',
+    icon: '/icons/sudoku.png',
+    desc: 'Classic Windows XP Puzzle',
+    size: '142 KB',
+    emoji: '🔢',
+  },
+  {
+    id: 'solitaire' as const,
+    name: 'Solitaire',
+    icon: null,
+    desc: 'Klondike Card Game',
+    size: '88 KB',
+    emoji: '🃏',
+  },
+]
+
 export default function GamesFolderApp({ onOpenApp }: GamesFolderAppProps) {
-  const [view, setView] = useState<'folder' | 'sudoku'>('folder')
-  const [isSelected, setIsSelected] = useState<boolean>(true)
+  const [view, setView] = useState<GameView>('folder')
+  const [selected, setSelected] = useState<string | null>(null)
 
-  const handleOpenSudoku = () => {
-    setView('sudoku')
-  }
+  const handleBackToFolder = () => setView('folder')
 
-  const handleBackToFolder = () => {
-    setView('folder')
-  }
+  const currentGame = GAMES.find(g => g.id === view)
+
+  const addressPath =
+    view === 'sudoku'
+      ? 'C:\\Program Files\\Games\\Sudoku.exe'
+      : view === 'solitaire'
+      ? 'C:\\Program Files\\Games\\Solitaire.exe'
+      : 'C:\\Program Files\\Games'
+
+  const statusText =
+    view === 'sudoku'
+      ? 'Sudoku running | C:\\Program Files\\Games\\Sudoku.exe'
+      : view === 'solitaire'
+      ? 'Solitaire running | C:\\Program Files\\Games\\Solitaire.exe'
+      : `${GAMES.length} objects | ${GAMES.reduce((s, g) => s + parseInt(g.size), 0)} KB`
 
   return (
     <div className="flex-1 flex flex-col bg-white text-neutral-800 text-[12px] font-sans h-full select-none overflow-hidden">
@@ -29,19 +61,19 @@ export default function GamesFolderApp({ onOpenApp }: GamesFolderAppProps) {
         <span className="hover:bg-[#316ac5] hover:text-white px-1.5 py-0.5 rounded-xs cursor-pointer">Help</span>
       </div>
 
-      {/* Explorer Standard Toolbar with Back button */}
+      {/* Explorer Standard Toolbar */}
       <div className="bg-[#ece9d8] border-b border-[#d0ccc0] px-2 py-1 flex items-center gap-1 text-[11px] shrink-0">
         <button
           type="button"
           onClick={handleBackToFolder}
           disabled={view === 'folder'}
           className={`flex items-center gap-1 px-2 py-0.5 rounded border border-transparent ${
-            view === 'sudoku'
+            view !== 'folder'
               ? 'hover:bg-white/80 hover:border-[#7f9db9] text-neutral-900 cursor-pointer shadow-xs'
               : 'text-neutral-400 opacity-60 cursor-not-allowed'
           }`}
         >
-          <span className={`text-base font-bold leading-none ${view === 'sudoku' ? 'text-emerald-600' : 'text-neutral-400'}`}>🠈</span>
+          <span className={`text-base font-bold leading-none ${view !== 'folder' ? 'text-emerald-600' : 'text-neutral-400'}`}>🠈</span>
           <span>Back</span>
         </button>
 
@@ -57,9 +89,7 @@ export default function GamesFolderApp({ onOpenApp }: GamesFolderAppProps) {
 
         <button
           type="button"
-          onClick={() => {
-            if (view === 'sudoku') handleBackToFolder()
-          }}
+          onClick={handleBackToFolder}
           className="flex items-center gap-1 px-1.5 py-0.5 rounded hover:bg-white/80 text-neutral-700 cursor-pointer"
         >
           <span>📁</span>
@@ -67,14 +97,24 @@ export default function GamesFolderApp({ onOpenApp }: GamesFolderAppProps) {
         </button>
 
         {view === 'folder' && (
-          <button
-            type="button"
-            onClick={handleOpenSudoku}
-            className="flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-100 hover:bg-emerald-200 border border-emerald-400 text-emerald-950 font-semibold cursor-pointer ml-auto shadow-xs"
-          >
-            <span>▶</span>
-            <span>Play Sudoku</span>
-          </button>
+          <div className="ml-auto flex gap-2">
+            <button
+              type="button"
+              onClick={() => setView('sudoku')}
+              className="flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-100 hover:bg-emerald-200 border border-emerald-400 text-emerald-950 font-semibold cursor-pointer shadow-xs"
+            >
+              <span>🔢</span>
+              <span>Play Sudoku</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setView('solitaire')}
+              className="flex items-center gap-1 px-2 py-0.5 rounded bg-red-50 hover:bg-red-100 border border-red-400 text-red-900 font-semibold cursor-pointer shadow-xs"
+            >
+              <span>🃏</span>
+              <span>Play Solitaire</span>
+            </button>
+          </div>
         )}
       </div>
 
@@ -82,18 +122,20 @@ export default function GamesFolderApp({ onOpenApp }: GamesFolderAppProps) {
       <div className="bg-[#ece9d8] border-b border-[#b0aba0] px-2 py-1 flex items-center gap-2 text-[11px] shrink-0">
         <span className="text-neutral-500">Address</span>
         <div className="flex-1 bg-white border border-[#7f9db9] rounded-xs px-2 py-0.5 flex items-center gap-1.5 shadow-inner">
-          <img
-            src={view === 'sudoku' ? '/icons/sudoku.png' : '/icons/folder-open.png'}
-            alt=""
-            className="w-4 h-4 object-contain"
-          />
-          <span className="text-neutral-800 font-medium">
-            {view === 'sudoku' ? 'C:\\Program Files\\Games\\Sudoku.exe' : 'C:\\Program Files\\Games'}
-          </span>
+          {view === 'solitaire' ? (
+            <span className="text-[13px]">🃏</span>
+          ) : (
+            <img
+              src={view === 'sudoku' ? '/icons/sudoku.png' : '/icons/folder-open.png'}
+              alt=""
+              className="w-4 h-4 object-contain"
+            />
+          )}
+          <span className="text-neutral-800 font-medium">{addressPath}</span>
         </div>
         <button
           type="button"
-          onClick={view === 'folder' ? handleOpenSudoku : handleBackToFolder}
+          onClick={view === 'folder' ? () => setView('sudoku') : handleBackToFolder}
           className="px-2 py-0.5 bg-[#ece9d8] border border-[#7f9db9] rounded-xs hover:bg-neutral-200 cursor-pointer"
         >
           Go
@@ -102,7 +144,6 @@ export default function GamesFolderApp({ onOpenApp }: GamesFolderAppProps) {
 
       {/* Main View Area */}
       {view === 'sudoku' ? (
-        // Sudoku Game View inside Games Folder window
         <SudokuApp
           onOpenWindow={() => {
             if (onOpenApp) {
@@ -111,6 +152,8 @@ export default function GamesFolderApp({ onOpenApp }: GamesFolderAppProps) {
             }
           }}
         />
+      ) : view === 'solitaire' ? (
+        <SolitaireApp />
       ) : (
         // Folder Listing View
         <div className="flex-1 flex overflow-hidden">
@@ -124,11 +167,18 @@ export default function GamesFolderApp({ onOpenApp }: GamesFolderAppProps) {
               </div>
               <div className="p-2 bg-[#d6dff7] flex flex-col gap-1.5 text-blue-900">
                 <div
-                  onClick={handleOpenSudoku}
+                  onClick={() => setView('sudoku')}
                   className="hover:underline cursor-pointer flex items-center gap-1.5 font-bold text-blue-950"
                 >
                   <img src="/icons/sudoku.png" alt="" className="w-4 h-4 object-contain" />
                   <span>Play Sudoku</span>
+                </div>
+                <div
+                  onClick={() => setView('solitaire')}
+                  className="hover:underline cursor-pointer flex items-center gap-1.5 font-bold text-blue-950"
+                >
+                  <span className="text-[15px]">🃏</span>
+                  <span>Play Solitaire</span>
                 </div>
                 {onOpenApp && (
                   <div
@@ -136,7 +186,7 @@ export default function GamesFolderApp({ onOpenApp }: GamesFolderAppProps) {
                     className="hover:underline cursor-pointer flex items-center gap-1.5 text-blue-900 text-[10px]"
                   >
                     <span>🗗</span>
-                    <span>Open in New Window</span>
+                    <span>Open Sudoku in New Window</span>
                   </div>
                 )}
                 <span className="hover:underline cursor-pointer flex items-center gap-1.5 text-blue-800 text-[10px]">
@@ -173,31 +223,44 @@ export default function GamesFolderApp({ onOpenApp }: GamesFolderAppProps) {
               </div>
             </div>
 
-            {/* Details Panel */}
+            {/* Details Panel — shows selected game info */}
             <div className="rounded-t-sm overflow-hidden shadow-xs bg-white">
               <div className="bg-gradient-to-r from-[#215dc6] to-[#4280e8] text-white font-bold px-2 py-1 flex justify-between items-center text-[11px]">
                 <span>Details</span>
                 <span className="text-[10px]">▲</span>
               </div>
               <div className="p-2 bg-[#d6dff7] text-neutral-800 text-[10px] leading-tight flex flex-col gap-1">
-                <div className="font-bold text-blue-950 flex items-center gap-1.5">
-                  <img src="/icons/sudoku.png" alt="" className="w-4 h-4 object-contain" />
-                  <span>Sudoku</span>
-                </div>
-                <div className="text-neutral-600">Application</div>
-                <div className="text-neutral-600">Classic Windows XP Puzzle</div>
-                <div className="text-neutral-600">Size: 142 KB</div>
-                <div className="text-neutral-600">Date Modified: 09/16/2026</div>
+                {selected ? (() => {
+                  const g = GAMES.find(gm => gm.id === selected)!
+                  return (
+                    <>
+                      <div className="font-bold text-blue-950 flex items-center gap-1.5">
+                        {g.icon ? <img src={g.icon} alt="" className="w-4 h-4 object-contain" /> : <span>{g.emoji}</span>}
+                        <span>{g.name}</span>
+                      </div>
+                      <div className="text-neutral-600">Application</div>
+                      <div className="text-neutral-600">{g.desc}</div>
+                      <div className="text-neutral-600">Size: {g.size}</div>
+                      <div className="text-neutral-600">Date Modified: 09/16/2026</div>
+                    </>
+                  )
+                })() : (
+                  <>
+                    <div className="font-bold text-blue-950">Games</div>
+                    <div className="text-neutral-600">Folder</div>
+                    <div className="text-neutral-600">{GAMES.length} items</div>
+                  </>
+                )}
               </div>
             </div>
           </div>
 
-          {/* Right Folder Content: List of games containing Sudoku file */}
+          {/* Right Folder Content */}
           <div
-            onClick={() => setIsSelected(false)}
+            onClick={() => setSelected(null)}
             className="flex-1 bg-white p-4 overflow-y-auto"
           >
-            {/* Folder Header / Hint */}
+            {/* Folder Header */}
             <div className="text-[11px] text-neutral-500 mb-3 border-b border-neutral-200 pb-1 flex justify-between items-center">
               <span>Files Stored in Games</span>
               <span className="text-[10px] text-neutral-400">Double-click to launch</span>
@@ -205,60 +268,57 @@ export default function GamesFolderApp({ onOpenApp }: GamesFolderAppProps) {
 
             {/* Grid of Files */}
             <div className="flex flex-wrap gap-4 items-start">
-              {/* Sudoku File Item */}
-              <div
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setIsSelected(true)
-                }}
-                onDoubleClick={(e) => {
-                  e.stopPropagation()
-                  handleOpenSudoku()
-                }}
-                className={`w-[100px] p-2 flex flex-col items-center rounded cursor-pointer transition-colors group relative ${
-                  isSelected
-                    ? 'bg-[#0b61ff]/20 border border-[#0b61ff]/70 shadow-xs'
-                    : 'hover:bg-neutral-100 border border-transparent'
-                }`}
-              >
-                {/* File Icon */}
-                <div className="relative w-14 h-14 flex items-center justify-center mb-1">
-                  <img
-                    src="/icons/sudoku.png"
-                    alt="Sudoku"
-                    className="w-12 h-12 object-contain drop-shadow-md group-hover:scale-105 transition-transform"
-                  />
-                  <span className="absolute -bottom-1 -right-1 bg-blue-600 text-white text-[8px] font-bold px-1 rounded shadow">
-                    EXE
-                  </span>
-                </div>
-
-                {/* File Title */}
-                <span
-                  className={`text-center text-xs font-semibold px-1 rounded ${
-                    isSelected ? 'bg-[#316ac5] text-white' : 'text-neutral-900 group-hover:text-blue-900'
+              {GAMES.map((game) => (
+                <div
+                  key={game.id}
+                  onClick={(e) => { e.stopPropagation(); setSelected(game.id) }}
+                  onDoubleClick={(e) => { e.stopPropagation(); setView(game.id) }}
+                  className={`w-[100px] p-2 flex flex-col items-center rounded cursor-pointer transition-colors group relative ${
+                    selected === game.id
+                      ? 'bg-[#0b61ff]/20 border border-[#0b61ff]/70 shadow-xs'
+                      : 'hover:bg-neutral-100 border border-transparent'
                   }`}
                 >
-                  Sudoku
-                </span>
+                  {/* File Icon */}
+                  <div className="relative w-14 h-14 flex items-center justify-center mb-1">
+                    {game.icon ? (
+                      <img
+                        src={game.icon}
+                        alt={game.name}
+                        className="w-12 h-12 object-contain drop-shadow-md group-hover:scale-105 transition-transform"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 flex items-center justify-center text-[42px] drop-shadow-md group-hover:scale-105 transition-transform">
+                        {game.emoji}
+                      </div>
+                    )}
+                    <span className="absolute -bottom-1 -right-1 bg-blue-600 text-white text-[8px] font-bold px-1 rounded shadow">
+                      EXE
+                    </span>
+                  </div>
 
-                {/* File Subtitle */}
-                <span className="text-[10px] text-neutral-500 text-center mt-0.5">
-                  Application
-                </span>
+                  {/* File Title */}
+                  <span
+                    className={`text-center text-xs font-semibold px-1 rounded ${
+                      selected === game.id ? 'bg-[#316ac5] text-white' : 'text-neutral-900 group-hover:text-blue-900'
+                    }`}
+                  >
+                    {game.name}
+                  </span>
 
-                {/* Quick Play Button */}
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    handleOpenSudoku()
-                  }}
-                  className="mt-2 w-full py-0.5 bg-gradient-to-b from-[#3c8bf0] to-[#0055ea] hover:brightness-110 text-white rounded text-[10px] font-bold shadow-xs cursor-pointer flex items-center justify-center gap-1"
-                >
-                  <span>▶</span> Play
-                </button>
-              </div>
+                  {/* File Subtitle */}
+                  <span className="text-[10px] text-neutral-500 text-center mt-0.5">Application</span>
+
+                  {/* Quick Play Button */}
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); setView(game.id) }}
+                    className="mt-2 w-full py-0.5 bg-gradient-to-b from-[#3c8bf0] to-[#0055ea] hover:brightness-110 text-white rounded text-[10px] font-bold shadow-xs cursor-pointer flex items-center justify-center gap-1"
+                  >
+                    <span>▶</span> Play
+                  </button>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -266,7 +326,7 @@ export default function GamesFolderApp({ onOpenApp }: GamesFolderAppProps) {
 
       {/* Explorer Status Bar */}
       <div className="bg-[#ece9d8] border-t border-[#d0ccc0] px-3 py-0.5 text-[11px] text-neutral-600 flex justify-between select-none shrink-0">
-        <span>{view === 'sudoku' ? 'Sudoku running | C:\\Program Files\\Games\\Sudoku.exe' : '1 object | 142 KB'}</span>
+        <span>{statusText}</span>
         <span>My Computer</span>
       </div>
     </div>

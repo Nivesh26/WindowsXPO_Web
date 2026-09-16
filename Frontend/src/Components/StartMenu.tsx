@@ -3,10 +3,11 @@ interface StartMenuProps {
   onClose: () => void
   onOpenApp: (appId: 'my-computer' | 'my-documents' | 'notepad' | 'internet' | 'recycle-bin' | 'games' | 'control-panel' | 'media-player' | 'sudoku') => void
   onLogOff: () => void
+  onRestart: () => void
   onTurnOff: () => void
 }
 
-export default function StartMenu({ isOpen, onClose, onOpenApp, onLogOff, onTurnOff }: StartMenuProps) {
+export default function StartMenu({ isOpen, onClose, onOpenApp, onLogOff, onRestart, onTurnOff }: StartMenuProps) {
   if (!isOpen) return null
 
   return (
@@ -263,7 +264,7 @@ export default function StartMenu({ isOpen, onClose, onOpenApp, onLogOff, onTurn
         </div>
       </div>
 
-      {/* Bottom Navy Bar: Log Off and Turn Off Computer */}
+      {/* Bottom Navy Bar: Log Off, Restart, and Turn Off Computer */}
       <div className="h-[44px] bg-gradient-to-r from-[#002d96] via-[#0044cc] to-[#002d96] border-t-2 border-amber-400/80 px-4 flex items-center justify-end gap-4 shadow-inner">
         {/* Log Off Button */}
         <button
@@ -275,6 +276,18 @@ export default function StartMenu({ isOpen, onClose, onOpenApp, onLogOff, onTurn
             🔑
           </div>
           <span>Log Off</span>
+        </button>
+
+        {/* Restart Button */}
+        <button
+          type="button"
+          onClick={onRestart}
+          className="flex items-center gap-2 text-white hover:text-amber-200 text-xs font-semibold cursor-pointer transition-colors"
+        >
+          <div className="w-5 h-5 rounded bg-blue-500 border border-blue-300 flex items-center justify-center text-[10px] shadow-xs">
+            🔄
+          </div>
+          <span>Restart</span>
         </button>
 
         {/* Turn Off Computer Button */}
