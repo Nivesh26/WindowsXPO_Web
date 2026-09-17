@@ -3,32 +3,23 @@ import { useState } from 'react'
 export default function NotepadApp() {
   const [text, setText] = useState<string>(
 `=============================================================
-  WELCOME TO NIVESH'S WINDOWS XP PORTFOLIO!
+  JUST A QUICK NOTE
 =============================================================
 
-Hey there! Thank you for booting into my retro workstation.
+This is my little digital notepad.
 
-ABOUT ME:
-• Name: Nivesh
-• Role: Full-Stack Engineer & Creative Web Developer
-• Location: Kathmandu / Remote
+I am enjoying the vibe of this desktop and testing out new ideas.
 
-CORE TECHNICAL EXPERTISE:
-• Frontend: React, Next.js, TypeScript, Tailwind CSS, HTML5/CSS3
-• Audio & Media: Web Audio API (real-time synthesizer sound generation)
-• Backend: Node.js, Express, RESTful APIs, Database Design
-• Systems & Tools: Git, Vite, Linux Shell, Responsive UX
+Things I want to remember today:
+• Keep experimenting
+• Build something useful
+• Stay curious and consistent
+• Make time for creativity
 
-EXPLORE THIS DESKTOP:
-1. Double-click "My Computer" to inspect system drives & storage.
-2. Open "My Documents" to read my resume and bio.
-3. Open "Internet Explorer" to browse web projects.
-4. Click the green "start" button in the bottom left to access
-   the classic Windows XP start menu, or turn off the computer!
+A small reminder:
+No matter how messy the day feels, progress still counts.
 
-Feel free to edit this note directly or write your own thoughts.
-
-Have fun reliving the golden era of computing!
+Write your thoughts here and make this space your own.
 =============================================================`
   )
 

@@ -50,18 +50,18 @@ export default function StartMenu({ isOpen, onClose, onOpenApp, onLogOff, onRest
               </div>
             </div>
 
-            {/* Pinned App: E-mail */}
+            {/* Pinned App: Picture */}
             <div
               onClick={() => {
-                onOpenApp('notepad')
+                onOpenApp('my-documents')
                 onClose()
               }}
               className="flex items-center gap-2.5 p-1.5 rounded hover:bg-[#316ac5] hover:text-white group cursor-pointer transition-colors"
             >
-              <div className="w-7 h-7 flex items-center justify-center text-xl shrink-0">✉️</div>
+              <div className="w-7 h-7 flex items-center justify-center text-xl shrink-0">🖼️</div>
               <div className="flex flex-col">
-                <span className="font-bold text-[12px] group-hover:text-white text-neutral-900">E-mail</span>
-                <span className="text-[10px] text-neutral-500 group-hover:text-blue-100">Outlook Express</span>
+                <span className="font-bold text-[12px] group-hover:text-white text-neutral-900">Picture</span>
+                <span className="text-[10px] text-neutral-500 group-hover:text-blue-100">My Pictures</span>
               </div>
             </div>
 
